@@ -1,6 +1,170 @@
-.tablaNotas{
-    font-family: system-ui ;
-    justify-content:space-between ;
-    border:4px solid #ccc;
-    min-width: 400px;
-}
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .content-header h2 {
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    margin: 0;
+    position: relative;
+  }
+  
+  .content-header h2::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 3rem;
+    height: 0.25rem;
+    background-color: var(--primary);
+    border-radius: 1rem;
+  }
+  
+  .filter {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    font-size: 0.95rem;
+    min-width: 150px;
+    cursor: pointer;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .brickheadz-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .brickheadz-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .image-container {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f0f0f0;
+    position: relative;
+  }
+  
+  .brickheadz-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+  }
+  
+  .brickheadz-card:hover .brickheadz-image {
+    transform: scale(1.05);
+  }
+  
+  .brickheadz-info {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .brickheadz-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  
+  .brickheadz-info p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+  
+  .available {
+    color: #2ecc71;
+    font-weight: 600;
+  }
+  
+  .discontinued {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+  
+  .add-to-collection {
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    margin-top: 1rem;
+    transition: var(--transition);
+    width: 100%;
+  }
+  
+  .add-to-collection:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+  
+  .card-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--secondary);
+    color: var(--text-primary);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 1;
+  }
+  
+  @media (max-width: 768px) {
+    .content-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .filter {
+      width: 100%;
+    }
+  
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .brickheadz-info h3 {
+      font-size: 1.1rem;
+    }
+  }
+  
+  

@@ -1,45 +1,64 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+"use client"
 
+import { useState } from "react"
+import axios from "axios"
+import "./Input.css"
+import { FaSearch } from "react-icons/fa"
 
-const Input = ({fetchNotas}) => {
-    //estado para almacenar el valor del input
-    const [nota, setNota] = useState('');
+function Input({ fetchBrickheadz }) {
+  const [legoId, setLegoId] = useState("")
+  const [isSearching, setIsSearching] = useState(false)
 
-    //función para manejar el cambio del input
-    const handleInputChange = (e) => {
-        setNota(e.target.value); // almacena el valor del input en el estado
-    };
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (legoId.trim() === "") return
 
-    //ruta PROVISIONAL al backend
-    const API_URL = 'https://8000-idx-lego-1740498734721.cluster-blu4edcrfnajktuztkjzgyxzek.cloudworkstations.dev/api/brickheadz';
+    setIsSearching(true)
+    axios
+      .get(`http://localhost:8000/api/brickheadz/${legoId}`)
+      .then((response) => {
+        if (response.data) {
+          alert(`Encontrado: ${response.data.name}`)
+          // Refrescar la lista después de una búsqueda exitosa
+          fetchBrickheadz()
+        } else {
+          alert("No se encontró el set.")
+        }
+      })
+      .catch((error) => {
+        console.error("Error al buscar el set:", error)
+        alert("Error al buscar el set. Por favor, inténtalo de nuevo.")
+      })
+      .finally(() => {
+        setIsSearching(false)
+      })
+  }
 
-    //función para manejar el clic del button anadir
-    const handleSubmit = () => {
-        //enviar datos al backend
-        axios.post(API_URL, {nota})
-        .then(response =>{
-            console.log('Nota añadida con éxtio', response.data);
-            setNota('')// limpiar el input
-            fetchNotas()
-        })
-        .catch(error => {
-            console.error('Error al anadir Nota', error);
-        });
-    }
-
-
-    return(
-        <div>
-            <input
-                type ='text'
-                placeholder ='Escribe aquí tu nota'
-                value ={nota}
-                onChange ={handleInputChange}
-            />
-            <button onClick ={handleSubmit}>Añadir</button>
-        </div>
-    )
+  return (
+    <div className="input-container">
+      <h3 className="input-title">Buscar por ID LEGO</h3>
+      <form className="search-form" onSubmit={handleSearch}>
+        <input
+          type="text"
+          placeholder="Introduce el ID del set (ej: 41600)"
+          value={legoId}
+          onChange={(e) => setLegoId(e.target.value)}
+          disabled={isSearching}
+        />
+        <button type="submit" disabled={isSearching || legoId.trim() === ""}>
+          {isSearching ? (
+            "Buscando..."
+          ) : (
+            <>
+              <FaSearch /> Buscar
+            </>
+          )}
+        </button>
+      </form>
+      <p className="search-tips">Introduce el número de ID del set LEGO BrickHeadz para encontrarlo rápidamente.</p>
+    </div>
+  )
 }
 
-export default Input;
+export default Input
+

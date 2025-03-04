@@ -1,0 +1,122 @@
+.header {
+    background: var(--card-bg);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+  
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 1rem;
+  }
+  
+  .logo {
+    height: 2.5rem;
+    transition: var(--transition);
+  }
+  
+  .logo:hover {
+    transform: scale(1.05);
+  }
+  
+  .search-container {
+    flex: 1;
+    max-width: 500px;
+    display: flex;
+    position: relative;
+  }
+  
+  .search-container input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 3rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+  }
+  
+  .search-container button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 3rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .search-container button:hover {
+    background: var(--primary-hover);
+  }
+  
+  .user-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .user-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .login-btn {
+    background: var(--primary);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+  }
+  
+  .login-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .header-container {
+      flex-wrap: wrap;
+    }
+  
+    .search-container {
+      order: 3;
+      max-width: 100%;
+      margin-top: 0.75rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header {
+      padding: 0.75rem;
+    }
+  
+    .logo {
+      height: 2rem;
+    }
+  
+    .login-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+  }
+  
+  

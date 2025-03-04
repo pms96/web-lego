@@ -1,41 +1,70 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-import './Content.css';
-import Header from './Header.jsx';
-import Content from './Content.jsx';
-import Input from './Input.jsx';
-import axios from 'axios';
+"use client"
+
+import { useState, useEffect } from "react"
+import "./App.css"
+import Header from "./Header.jsx"
+import Content from "./Content.jsx"
+import Input from "./Input.jsx"
+import axios from "axios"
 
 function App() {
-  const [datos, setDatos] = useState([]);
+  const [brickheadz, setBrickheadz] = useState([])
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  //función para obtener las notas del backend
-  const fetchNotas = () => {
-    axios.get('https://8000-idx-lego-1740498734721.cluster-blu4edcrfnajktuztkjzgyxzek.cloudworkstations.dev/api/brickheadz')
-      .then(response => {
-        if (Array.isArray(response.data)) {
-          console.log(response.data);
-          setDatos(response.data);
+  // Comprobar si el usuario está autenticado (puede basarse en un token en localStorage)
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (token) {
+      setIsAuthenticated(true)
+    }
+  }, [])
+
+  // Función para obtener los sets BrickHeadz desde la API
+  const fetchBrickheadz = () => {
+    setIsLoading(true)
+    setError(null)
+
+    axios
+      .get("http://localhost:8000/api/brickheadz")
+      .then((response) => {
+        if (Array.isArray(response.data.data)) {
+          setBrickheadz(response.data.data)
         } else {
-          console.error('Los datos no son un array:', response.data.data);
+          console.error("Los datos no son un array:", response.data.data)
+          setError("Error al cargar los datos. Por favor, inténtalo de nuevo más tarde.")
         }
       })
-      .catch(error => {
-        console.error('Error al obtener los datos: ', error);
-      });
-  };
+      .catch((error) => {
+        console.error("Error al obtener los datos: ", error)
+        setError("Error de conexión. Por favor, verifica tu conexión a internet e inténtalo de nuevo.")
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
 
   useEffect(() => {
-    fetchNotas(); // Llamamos la función al cargar la página
-  }, []);
+    fetchBrickheadz()
+  }, []) // Removed fetchBrickheadz from the dependency array
 
   return (
-    <>
-      <Header />
-      <Input fetchNotas={fetchNotas} />
-      <Content datos={datos} fetchNotas={fetchNotas} />
-    </>
-  );
+    <div className="app-container">
+      <Header isAuthenticated={isAuthenticated} />
+      <div className="main-content">
+        <Input fetchBrickheadz={fetchBrickheadz} />
+        <Content
+          brickheadz={brickheadz}
+          fetchBrickheadz={fetchBrickheadz}
+          isAuthenticated={isAuthenticated}
+          isLoading={isLoading}
+          error={error}
+        />
+      </div>
+    </div>
+  )
 }
 
-export default App;
+export default App
+
