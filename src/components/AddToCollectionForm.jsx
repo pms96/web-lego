@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "./AddToCollectionForm.css"
 import { useAuth } from "../context/AuthContext"
 
@@ -8,13 +8,24 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
   const { user } = useAuth()
   const [formData, setFormData] = useState({
     brickheadz_id: brickheadz.id,
-    user_id: user?.id || "",
+    user_id: "",
     date_acquired: new Date().toISOString().split("T")[0], // Fecha actual como valor predeterminado
     price_acquired: "",
     status: "Nuevo", // Valor predeterminado
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
+
+  // Cargar el userId al montar el componente
+  useEffect(() => {
+    const userId = user?.id || localStorage.getItem("userId")
+    if (userId) {
+      setFormData((prev) => ({
+        ...prev,
+        user_id: userId,
+      }))
+    }
+  }, [user])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -112,7 +123,7 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
           <button type="button" className="cancel-button" onClick={onClose} disabled={isSubmitting}>
             Cancelar
           </button>
-          <button type="submit" className="submit-button" disabled={isSubmitting}>
+          <button type="submit" className="submit-button" disabled={isSubmitting || !formData.user_id}>
             {isSubmitting ? "Añadiendo..." : "Añadir a mi colección"}
           </button>
         </div>

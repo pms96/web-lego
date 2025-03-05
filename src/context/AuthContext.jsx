@@ -25,6 +25,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token")
+      const userId = localStorage.getItem("userId")
+
       if (token) {
         try {
           // Configurar el token para esta solicitud
@@ -36,9 +38,18 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true)
           // Si tienes un endpoint para obtener datos del usuario:
           // setUser(response.data);
+
+          // Si no hay una respuesta con datos del usuario, al menos establecemos el ID
+          if (userId) {
+            setUser((prevUser) => ({
+              ...(prevUser || {}),
+              id: userId,
+            }))
+          }
         } catch (error) {
           console.error("Error al verificar la autenticación:", error)
           localStorage.removeItem("token")
+          localStorage.removeItem("userId")
           delete axios.defaults.headers.common["Authorization"]
           setIsAuthenticated(false)
         }
@@ -58,15 +69,19 @@ export const AuthProvider = ({ children }) => {
         password,
       })
 
-      const { token, user: userData } = response.data
+      const { token, user: userData, userId } = response.data
 
-      // Guardar el token en localStorage
+      // Guardar el token y userId en localStorage
       localStorage.setItem("token", token)
+      localStorage.setItem("userId", userId || userData?.id)
 
       // Configurar axios para incluir el token en futuras solicitudes
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
 
-      setUser(userData)
+      setUser({
+        ...userData,
+        id: userId || userData?.id,
+      })
       setIsAuthenticated(true)
       return true
     } catch (error) {
@@ -83,8 +98,9 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error al cerrar sesión:", error)
     } finally {
-      // Limpiar el token y el estado de autenticación
+      // Limpiar el token, userId y el estado de autenticación
       localStorage.removeItem("token")
+      localStorage.removeItem("userId")
       delete axios.defaults.headers.common["Authorization"]
       setUser(null)
       setIsAuthenticated(false)
