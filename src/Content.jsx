@@ -4,11 +4,14 @@ import { useState } from "react"
 import "./Content.css"
 import Modal from "./Modal"
 import { FaInfoCircle, FaExclamationTriangle } from "react-icons/fa"
+import AddToCollectionForm from "./components/AddToCollectionForm"
 
-function Content({ brickheadz, isAuthenticated, isLoading, error, onAddToCollection }) {
+function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickheadz, userId }) {
   const [filter, setFilter] = useState("all")
   const [selectedSet, setSelectedSet] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAddToCollectionModalOpen, setIsAddToCollectionModalOpen] = useState(false)
+  const [selectedSetForCollection, setSelectedSetForCollection] = useState(null)
 
   // Filtrar los sets según el criterio seleccionado
   const filteredSets = brickheadz.filter((set) => {
@@ -23,9 +26,15 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, onAddToCollect
     setIsModalOpen(true)
   }
 
-  const handleAddToCollection = (e, legoId) => {
-    e.stopPropagation() // Evitar que se abra el modal
-    onAddToCollection(legoId)
+  const handleAddToCollection = (e, set) => {
+    e.stopPropagation() // Evitar que se abra el modal de detalles
+    setSelectedSetForCollection(set)
+    setIsAddToCollectionModalOpen(true)
+  }
+
+  const handleAddToCollectionSuccess = () => {
+    // Refrescar los datos después de añadir a la colección
+    fetchBrickheadz()
   }
 
   if (isLoading) {
@@ -95,7 +104,7 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, onAddToCollect
                 </p>
 
                 {isAuthenticated && (
-                  <button className="add-to-collection" onClick={(e) => handleAddToCollection(e, set.lego_id)}>
+                  <button className="add-to-collection" onClick={(e) => handleAddToCollection(e, set)}>
                     Añadir a mi colección
                   </button>
                 )}
@@ -105,6 +114,7 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, onAddToCollect
         </div>
       )}
 
+      {/* Modal de detalles del set */}
       {isModalOpen && selectedSet && (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <div>
@@ -139,12 +149,23 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, onAddToCollect
             </div>
             {isAuthenticated && (
               <div className="modal-footer">
-                <button className="add-to-collection" onClick={(e) => handleAddToCollection(e, selectedSet.lego_id)}>
+                <button className="add-to-collection" onClick={(e) => handleAddToCollection(e, selectedSet)}>
                   Añadir a mi colección
                 </button>
               </div>
             )}
           </div>
+        </Modal>
+      )}
+
+      {/* Modal para añadir a la colección */}
+      {isAddToCollectionModalOpen && selectedSetForCollection && (
+        <Modal isOpen={isAddToCollectionModalOpen} onClose={() => setIsAddToCollectionModalOpen(false)}>
+          <AddToCollectionForm
+            brickheadz={selectedSetForCollection}
+            onClose={() => setIsAddToCollectionModalOpen(false)}
+            onSuccess={handleAddToCollectionSuccess}
+          />
         </Modal>
       )}
     </div>

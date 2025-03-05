@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import "./App.css"
 import Header from "./Header.jsx"
 import Content from "./Content.jsx"
@@ -24,10 +24,10 @@ function AppContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showCollection, setShowCollection] = useState(false)
-  const { isAuthenticated, loading } = useAuth()
+  const { isAuthenticated, loading, user } = useAuth()
 
   // Función para obtener los sets BrickHeadz desde la API
-  const fetchBrickheadz = () => {
+  const fetchBrickheadz = useCallback(() => {
     setIsLoading(true)
     setError(null)
 
@@ -48,29 +48,11 @@ function AppContent() {
       .finally(() => {
         setIsLoading(false)
       })
-  }
+  }, [])
 
   useEffect(() => {
     fetchBrickheadz()
-  }, []) // Removed isAuthenticated from dependencies
-
-  // Función para añadir un set a la colección del usuario
-  const addToCollection = async (legoId) => {
-    if (!isAuthenticated) {
-      alert("Debes iniciar sesión para añadir sets a tu colección")
-      return
-    }
-
-    try {
-      await axios.post("https://api.lego.lagrailla.es/api/user/collection", {
-        lego_id: legoId,
-      })
-      alert(`Set ${legoId} añadido a tu colección`)
-    } catch (error) {
-      console.error("Error al añadir a la colección:", error)
-      alert("Error al añadir el set a tu colección. Por favor, inténtalo de nuevo.")
-    }
-  }
+  }, [fetchBrickheadz]) // Added fetchBrickheadz to dependencies
 
   // Esperar a que se verifique la autenticación
   if (loading) {
@@ -93,7 +75,7 @@ function AppContent() {
       />
       <div className="main-content">
         {isAuthenticated && showCollection ? (
-          <UserCollection />
+          <UserCollection refreshData={fetchBrickheadz} />
         ) : (
           <>
             <Input fetchBrickheadz={fetchBrickheadz} />
@@ -103,7 +85,7 @@ function AppContent() {
               isAuthenticated={isAuthenticated}
               isLoading={isLoading}
               error={error}
-              onAddToCollection={addToCollection}
+              userId={user?.id}
             />
           </>
         )}

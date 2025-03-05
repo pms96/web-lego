@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import "./UserCollection.css"
-import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
+import { FaExclamationTriangle, FaTrash, FaSync } from "react-icons/fa"
 
-const UserCollection = () => {
+const UserCollection = ({ refreshData }) => {
   const [collection, setCollection] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -68,18 +68,38 @@ const UserCollection = () => {
 
   return (
     <div className="user-collection">
-      <h2 className="collection-title">Mi Colección de BrickHeadz</h2>
+      <div className="collection-header">
+        <h2 className="collection-title">Mi Colección de BrickHeadz</h2>
+        <button className="refresh-button" onClick={fetchUserCollection} title="Actualizar colección">
+          <FaSync />
+        </button>
+      </div>
 
       <div className="collection-grid">
         {collection.map((item) => (
           <div key={item.id} className="collection-item">
             <div className="collection-item-image">
-              <img src={item.brickheadz.image || "/placeholder.svg?height=150&width=150"} alt={item.brickheadz.name} />
+              <img
+                src={item.brickheadz?.image || "/placeholder.svg?height=150&width=150"}
+                alt={item.brickheadz?.name}
+              />
             </div>
             <div className="collection-item-info">
-              <h3>{item.brickheadz.name}</h3>
-              <p>ID: {item.brickheadz.lego_id}</p>
-              <p>Añadido: {new Date(item.created_at).toLocaleDateString()}</p>
+              <h3>{item.brickheadz?.name}</h3>
+              <p>
+                <strong>ID:</strong> {item.brickheadz?.lego_id}
+              </p>
+              <p>
+                <strong>Adquirido:</strong> {new Date(item.date_acquired).toLocaleDateString()}
+              </p>
+              {item.price_acquired && (
+                <p>
+                  <strong>Precio:</strong> {item.price_acquired}€
+                </p>
+              )}
+              <p>
+                <strong>Estado:</strong> <span className="status-badge">{item.status || "Nuevo"}</span>
+              </p>
               <button className="remove-button" onClick={() => removeFromCollection(item.id)}>
                 <FaTrash /> Eliminar
               </button>
@@ -92,3 +112,4 @@ const UserCollection = () => {
 }
 
 export default UserCollection
+
