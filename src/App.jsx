@@ -5,21 +5,26 @@ import "./App.css"
 import Header from "./Header.jsx"
 import Content from "./Content.jsx"
 import Input from "./Input.jsx"
+import UserCollection from "./components/UserCollection.jsx"
+import { AuthProvider, useAuth } from "./context/AuthContext"
 import axios from "axios"
 
+// Componente principal envuelto en AuthProvider
 function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  )
+}
+
+// Contenido de la aplicación que usa el contexto de autenticación
+function AppContent() {
   const [brickheadz, setBrickheadz] = useState([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  // Comprobar si el usuario está autenticado (puede basarse en un token en localStorage)
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      setIsAuthenticated(true)
-    }
-  }, [])
+  const [showCollection, setShowCollection] = useState(false)
+  const { isAuthenticated, loading } = useAuth()
 
   // Función para obtener los sets BrickHeadz desde la API
   const fetchBrickheadz = () => {
@@ -27,7 +32,7 @@ function App() {
     setError(null)
 
     axios
-      .get("http://localhost:8000/api/brickheadz")
+      .get("https://api.lego.lagrailla.es/api/brickheadz")
       .then((response) => {
         if (Array.isArray(response.data.data)) {
           setBrickheadz(response.data.data)
@@ -47,20 +52,61 @@ function App() {
 
   useEffect(() => {
     fetchBrickheadz()
-  }, []) // Removed fetchBrickheadz from the dependency array
+  }, []) // Removed isAuthenticated from dependencies
+
+  // Función para añadir un set a la colección del usuario
+  const addToCollection = async (legoId) => {
+    if (!isAuthenticated) {
+      alert("Debes iniciar sesión para añadir sets a tu colección")
+      return
+    }
+
+    try {
+      await axios.post("https://api.lego.lagrailla.es/api/user/collection", {
+        lego_id: legoId,
+      })
+      alert(`Set ${legoId} añadido a tu colección`)
+    } catch (error) {
+      console.error("Error al añadir a la colección:", error)
+      alert("Error al añadir el set a tu colección. Por favor, inténtalo de nuevo.")
+    }
+  }
+
+  // Esperar a que se verifique la autenticación
+  if (loading) {
+    return (
+      <div className="app-container">
+        <div className="loading-screen">
+          <div className="loading-spinner"></div>
+          <p>Cargando...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="app-container">
-      <Header isAuthenticated={isAuthenticated} />
+      <Header
+        isAuthenticated={isAuthenticated}
+        onToggleCollection={() => setShowCollection(!showCollection)}
+        showCollection={showCollection}
+      />
       <div className="main-content">
-        <Input fetchBrickheadz={fetchBrickheadz} />
-        <Content
-          brickheadz={brickheadz}
-          fetchBrickheadz={fetchBrickheadz}
-          isAuthenticated={isAuthenticated}
-          isLoading={isLoading}
-          error={error}
-        />
+        {isAuthenticated && showCollection ? (
+          <UserCollection />
+        ) : (
+          <>
+            <Input fetchBrickheadz={fetchBrickheadz} />
+            <Content
+              brickheadz={brickheadz}
+              fetchBrickheadz={fetchBrickheadz}
+              isAuthenticated={isAuthenticated}
+              isLoading={isLoading}
+              error={error}
+              onAddToCollection={addToCollection}
+            />
+          </>
+        )}
       </div>
     </div>
   )

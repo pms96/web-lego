@@ -1,0 +1,171 @@
+
+.user-collection {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+  
+  .collection-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    position: relative;
+  }
+  
+  .collection-title::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 3rem;
+    height: 0.25rem;
+    background-color: var(--primary);
+    border-radius: 1rem;
+  }
+  
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .collection-item {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .collection-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .collection-item-image {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    overflow: hidden;
+  }
+  
+  .collection-item-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: var(--transition);
+  }
+  
+  .collection-item:hover .collection-item-image img {
+    transform: scale(1.05);
+  }
+  
+  .collection-item-info {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .collection-item-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  
+  .collection-item-info p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .remove-button {
+    margin-top: auto;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .remove-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .user-collection-loading,
+  .user-collection-error,
+  .user-collection-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+  
+  .user-collection-loading p {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+  }
+  
+  .user-collection-error {
+    color: #e74c3c;
+  }
+  
+  .user-collection-error svg {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .user-collection-error button {
+    margin-top: 1rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .user-collection-error button:hover {
+    background-color: var(--primary-hover);
+  }
+  
+  .user-collection-empty h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  
+  .user-collection-empty p {
+    color: var(--text-secondary);
+  }
+  
+  @media (max-width: 768px) {
+    .collection-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .collection-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  

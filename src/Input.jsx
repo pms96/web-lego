@@ -15,7 +15,7 @@ function Input({ fetchBrickheadz }) {
 
     setIsSearching(true)
     axios
-      .get(`http://localhost:8000/api/brickheadz/${legoId}`)
+      .get(`https://api.lego.lagrailla.es/api/brickheadz/${legoId}`)
       .then((response) => {
         if (response.data) {
           alert(`Encontrado: ${response.data.name}`)

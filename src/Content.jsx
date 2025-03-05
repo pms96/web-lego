@@ -5,7 +5,7 @@ import "./Content.css"
 import Modal from "./Modal"
 import { FaInfoCircle, FaExclamationTriangle } from "react-icons/fa"
 
-function Content({ brickheadz, isAuthenticated, isLoading, error }) {
+function Content({ brickheadz, isAuthenticated, isLoading, error, onAddToCollection }) {
   const [filter, setFilter] = useState("all")
   const [selectedSet, setSelectedSet] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -23,10 +23,9 @@ function Content({ brickheadz, isAuthenticated, isLoading, error }) {
     setIsModalOpen(true)
   }
 
-  const handleAddToCollection = (e, setId) => {
+  const handleAddToCollection = (e, legoId) => {
     e.stopPropagation() // Evitar que se abra el modal
-    // Aquí iría la lógica para añadir a la colección
-    alert(`Set ${setId} añadido a tu colección`)
+    onAddToCollection(legoId)
   }
 
   if (isLoading) {
