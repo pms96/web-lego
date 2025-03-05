@@ -113,9 +113,9 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
         <div className="form-group">
           <label htmlFor="status">Estado</label>
           <select id="status" name="status" value={formData.status} onChange={handleChange}>
-            <option value="Nuevo">Nuevo</option>
-            <option value="Usado">Usado</option>
-            <option value="Dañado">Dañado</option>
+            <option value="NEW">Nuevo</option>
+            <option value="USED">Usado</option>
+            <option value="DAMAGED">Dañado</option>
           </select>
         </div>
 
