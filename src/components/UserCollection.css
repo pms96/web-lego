@@ -120,8 +120,34 @@
   background-color: #e0e0e0;
 }
 
-.remove-button {
+.collection-item-actions {
+  display: flex;
+  gap: 0.5rem;
   margin-top: auto;
+}
+
+.edit-button {
+  flex: 1;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.edit-button:hover {
+  background-color: #2980b9;
+}
+
+.remove-button {
+  flex: 1;
   background-color: #e74c3c;
   color: white;
   border: none;
@@ -237,10 +263,6 @@
   border-left: 4px solid #e74c3c;
   color: #e74c3c;
   padding: 0.75rem 1rem;
-  margin: (76,60,0.1);
-  border-left: 4px solid #e74c3c;
-  color: #e74c3c;
-  padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   border-radius: var(--border-radius);
   font-size: 0.9rem;
@@ -260,9 +282,13 @@
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1rem;
   }
-  
+
   .load-more-button {
     padding: 0.6rem 1.2rem;
+  }
+
+  .collection-item-actions {
+    flex-direction: column;
   }
 }
 
@@ -270,9 +296,10 @@
   .collection-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .load-more-button {
     width: 100%;
     justify-content: center;
   }
 }
+

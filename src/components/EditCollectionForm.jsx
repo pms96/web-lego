@@ -1,31 +1,23 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import "./AddToCollectionForm.css"
+import { useState } from "react"
+import "./AddToCollectionForm.css" // Reutilizamos los estilos del formulario de añadir
 import { useAuth } from "../context/AuthContext"
 
-const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
+const EditCollectionForm = ({ collectionItem, onClose, onSuccess }) => {
   const { user } = useAuth()
   const [formData, setFormData] = useState({
-    brickheadz_id: brickheadz.id,
-    user_id: "",
-    date_acquired: new Date().toISOString().split("T")[0], // Fecha actual como valor predeterminado
-    price_acquired: "",
-    status: "NEW", // Valor predeterminado actualizado
+    id: collectionItem.id,
+    brickheadz_id: collectionItem.brickheadz_id,
+    user_id: user?.id || localStorage.getItem("userId"),
+    date_acquired: collectionItem.date_acquired
+      ? new Date(collectionItem.date_acquired).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
+    price_acquired: collectionItem.price_acquired || "",
+    status: collectionItem.status || "NEW",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
-
-  // Cargar el userId al montar el componente
-  useEffect(() => {
-    const userId = user?.id || localStorage.getItem("userId")
-    if (userId) {
-      setFormData((prev) => ({
-        ...prev,
-        user_id: userId,
-      }))
-    }
-  }, [user])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -41,8 +33,8 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
     setError(null)
 
     try {
-      const response = await fetch("https://api.lego.lagrailla.es/api/user/collection", {
-        method: "POST",
+      const response = await fetch(`https://api.lego.lagrailla.es/api/user/collection/${collectionItem.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -52,15 +44,15 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || "Error al añadir a la colección")
+        throw new Error(errorData.message || "Error al actualizar el elemento de la colección")
       }
 
       const data = await response.json()
       onSuccess(data)
       onClose()
     } catch (error) {
-      console.error("Error al añadir a la colección:", error)
-      setError(error.message || "Error al añadir a la colección. Por favor, inténtalo de nuevo.")
+      console.error("Error al actualizar el elemento de la colección:", error)
+      setError(error.message || "Error al actualizar. Por favor, inténtalo de nuevo.")
     } finally {
       setIsSubmitting(false)
     }
@@ -68,17 +60,17 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
 
   return (
     <div className="add-collection-form">
-      <h2 className="form-title">Añadir a mi colección</h2>
+      <h2 className="form-title">Editar elemento de la colección</h2>
 
       <div className="set-info">
         <img
-          src={brickheadz.image || "/placeholder.svg?height=100&width=100"}
-          alt={brickheadz.name}
+          src={collectionItem.brickheadz?.image || "/placeholder.svg?height=100&width=100"}
+          alt={collectionItem.brickheadz?.name}
           className="set-thumbnail"
         />
         <div className="set-details">
-          <h3>{brickheadz.name}</h3>
-          <p>ID LEGO: {brickheadz.lego_id}</p>
+          <h3>{collectionItem.brickheadz?.name}</h3>
+          <p>ID LEGO: {collectionItem.brickheadz?.lego_id}</p>
         </div>
       </div>
 
@@ -126,8 +118,8 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
           <button type="button" className="cancel-button" onClick={onClose} disabled={isSubmitting}>
             Cancelar
           </button>
-          <button type="submit" className="submit-button" disabled={isSubmitting || !formData.user_id}>
-            {isSubmitting ? "Añadiendo..." : "Añadir a mi colección"}
+          <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {isSubmitting ? "Guardando..." : "Guardar cambios"}
           </button>
         </div>
       </form>
@@ -135,5 +127,5 @@ const AddToCollectionForm = ({ brickheadz, onClose, onSuccess }) => {
   )
 }
 
-export default AddToCollectionForm
+export default EditCollectionForm
 

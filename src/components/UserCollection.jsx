@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import "./UserCollection.css"
-import { FaExclamationTriangle, FaTrash, FaSync, FaChevronDown } from "react-icons/fa"
+import { FaExclamationTriangle, FaTrash, FaSync, FaChevronDown, FaEdit } from "react-icons/fa"
+import Modal from "../Modal"
+import EditCollectionForm from "./EditCollectionForm"
 
 const UserCollection = ({ refreshData }) => {
   const [collection, setCollection] = useState([])
@@ -15,6 +17,10 @@ const UserCollection = ({ refreshData }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [hasMorePages, setHasMorePages] = useState(true)
   const [paginationError, setPaginationError] = useState(null)
+
+  // Estados para el modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState(null)
 
   useEffect(() => {
     fetchUserCollection(1, true) // Cargar la primera página al montar
@@ -81,6 +87,34 @@ const UserCollection = ({ refreshData }) => {
     alert(`Funcionalidad para eliminar el set ${setId} de tu colección aún no implementada.`)
   }
 
+  const handleEditItem = (item) => {
+    setSelectedItem(item)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // Refrescar la colección después de editar
+    refreshCollection()
+  }
+
+  // Función para mostrar el estado en español
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      NEW: "Nuevo",
+      BOX_AND_INSTRUCTIONS: "Caja e instrucciones",
+      ONLY_BOX: "Solo caja",
+      INSTRUCTIONS: "Instrucciones",
+      COMPLETE: "Completo",
+      INCOMPLETE: "Incompleto",
+      // Mantener compatibilidad con valores antiguos
+      Nuevo: "Nuevo",
+      Usado: "Usado",
+      Dañado: "Dañado",
+    }
+
+    return statusMap[status] || status
+  }
+
   if (isLoading) {
     return (
       <div className="user-collection-loading">
@@ -142,11 +176,16 @@ const UserCollection = ({ refreshData }) => {
                 </p>
               )}
               <p>
-                <strong>Estado:</strong> <span className="status-badge">{item.status || "Nuevo"}</span>
+                <strong>Estado:</strong> <span className="status-badge">{getStatusLabel(item.status)}</span>
               </p>
-              <button className="remove-button" onClick={() => removeFromCollection(item.id)}>
-                <FaTrash /> Eliminar
-              </button>
+              <div className="collection-item-actions">
+                <button className="edit-button" onClick={() => handleEditItem(item)}>
+                  <FaEdit /> Editar
+                </button>
+                <button className="remove-button" onClick={() => removeFromCollection(item.id)}>
+                  <FaTrash /> Eliminar
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -169,6 +208,17 @@ const UserCollection = ({ refreshData }) => {
             )}
           </button>
         </div>
+      )}
+
+      {/* Modal de edición */}
+      {isEditModalOpen && selectedItem && (
+        <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+          <EditCollectionForm
+            collectionItem={selectedItem}
+            onClose={() => setIsEditModalOpen(false)}
+            onSuccess={handleEditSuccess}
+          />
+        </Modal>
       )}
     </div>
   )
