@@ -1,206 +1,278 @@
 .user-collection {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.collection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.collection-title {
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  position: relative;
+  margin: 0;
+}
+
+.collection-title::after {
+  content: "";
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  width: 3rem;
+  height: 0.25rem;
+  background-color: var(--primary);
+  border-radius: 1rem;
+}
+
+.refresh-button {
+  background: transparent;
+  border: 1px solid #ddd;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.refresh-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--primary);
+  transform: rotate(180deg);
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.collection-item {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.collection-item-image {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.collection-item-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: var(--transition);
+}
+
+.collection-item:hover .collection-item-image img {
+  transform: scale(1.05);
+}
+
+.collection-item-info {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-item-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.collection-item-info p {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #e0e0e0;
+}
+
+.remove-button {
+  margin-top: auto;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.remove-button:hover {
+  background-color: #c0392b;
+}
+
+.user-collection-loading,
+.user-collection-error,
+.user-collection-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.user-collection-loading p {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+}
+
+.user-collection-error {
+  color: #e74c3c;
+}
+
+.user-collection-error svg {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.user-collection-error button {
+  margin-top: 1rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.user-collection-error button:hover {
+  background-color: var(--primary-hover);
+}
+
+.user-collection-empty h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.user-collection-empty p {
+  color: var(--text-secondary);
+}
+
+/* Estilos para la paginación */
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.load-more-button {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.load-more-button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+.load-more-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading-spinner-small {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-left-color: var(--primary);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+.pagination-error {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid #e74c3c;
+  color: #e74c3c;
+  padding: 0.75rem 1rem;
+  margin: (76,60,0.1);
+  border-left: 4px solid #e74c3c;
+  color: #e74c3c;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-  
-  .collection-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-  }
-  
-  .collection-title {
-    font-size: 1.75rem;
-    color: var(--text-primary);
-    position: relative;
-    margin: 0;
-  }
-  
-  .collection-title::after {
-    content: "";
-    position: absolute;
-    bottom: -0.5rem;
-    left: 0;
-    width: 3rem;
-    height: 0.25rem;
-    background-color: var(--primary);
-    border-radius: 1rem;
-  }
-  
-  .refresh-button {
-    background: transparent;
-    border: 1px solid #ddd;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition);
-  }
-  
-  .refresh-button:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--primary);
-    transform: rotate(180deg);
-  }
-  
+}
+
+@media (max-width: 768px) {
   .collection-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
   }
   
-  .collection-item {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .collection-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-  }
-  
-  .collection-item-image {
-    width: 100%;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0f0f0;
-    overflow: hidden;
-  }
-  
-  .collection-item-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    transition: var(--transition);
-  }
-  
-  .collection-item:hover .collection-item-image img {
-    transform: scale(1.05);
-  }
-  
-  .collection-item-info {
-    padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .collection-item-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-  }
-  
-  .collection-item-info p {
-    margin-bottom: 0.5rem;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-  }
-  
-  .status-badge {
-    display: inline-block;
-    padding: 0.2rem 0.5rem;
-    border-radius: 1rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    background-color: #e0e0e0;
-  }
-  
-  .remove-button {
-    margin-top: auto;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.6rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-  
-  .remove-button:hover {
-    background-color: #c0392b;
-  }
-  
-  .user-collection-loading,
-  .user-collection-error,
-  .user-collection-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    text-align: center;
-  }
-  
-  .user-collection-loading p {
-    margin-top: 1rem;
-    color: var(--text-secondary);
-  }
-  
-  .user-collection-error {
-    color: #e74c3c;
-  }
-  
-  .user-collection-error svg {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .user-collection-error button {
-    margin-top: 1rem;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
+  .load-more-button {
     padding: 0.6rem 1.2rem;
-    cursor: pointer;
-    transition: var(--transition);
+  }
+}
+
+@media (max-width: 480px) {
+  .collection-grid {
+    grid-template-columns: 1fr;
   }
   
-  .user-collection-error button:hover {
-    background-color: var(--primary-hover);
+  .load-more-button {
+    width: 100%;
+    justify-content: center;
   }
-  
-  .user-collection-empty h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-  }
-  
-  .user-collection-empty p {
-    color: var(--text-secondary);
-  }
-  
-  @media (max-width: 768px) {
-    .collection-grid {
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .collection-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  
+}

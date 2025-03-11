@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import "./Content.css"
 import Modal from "./Modal"
-import { FaInfoCircle, FaExclamationTriangle } from "react-icons/fa"
+import { FaInfoCircle, FaExclamationTriangle, FaChevronDown } from "react-icons/fa"
 import AddToCollectionForm from "./components/AddToCollectionForm"
 
 function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickheadz, userId }) {
@@ -13,13 +13,27 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
   const [isAddToCollectionModalOpen, setIsAddToCollectionModalOpen] = useState(false)
   const [selectedSetForCollection, setSelectedSetForCollection] = useState(null)
 
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const [allBrickheadz, setAllBrickheadz] = useState(brickheadz)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMorePages, setHasMorePages] = useState(true)
+  const [paginationError, setPaginationError] = useState(null)
+
   // Filtrar los sets según el criterio seleccionado
-  const filteredSets = brickheadz.filter((set) => {
+  const filteredSets = allBrickheadz.filter((set) => {
     if (filter === "all") return true
     if (filter === "available") return !set.is_discontinued
     if (filter === "discontinued") return set.is_discontinued
     return true
   })
+
+  // Actualizar allBrickheadz cuando cambia brickheadz (primera carga)
+  React.useEffect(() => {
+    if (brickheadz.length > 0 && allBrickheadz.length === 0) {
+      setAllBrickheadz(brickheadz)
+    }
+  }, [brickheadz, allBrickheadz.length])
 
   const handleSetClick = (set) => {
     setSelectedSet(set)
@@ -37,7 +51,40 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
     fetchBrickheadz()
   }
 
-  if (isLoading) {
+  const loadMoreBrickheadz = async () => {
+    setIsLoadingMore(true)
+    setPaginationError(null)
+
+    try {
+      const nextPage = currentPage + 1
+      const response = await fetch(`https://api.lego.lagrailla.es/api/brickheadz?page=${nextPage}`)
+
+      if (!response.ok) {
+        throw new Error("Error al cargar más sets")
+      }
+
+      const data = await response.json()
+
+      if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+        // Añadir los nuevos sets a los existentes
+        setAllBrickheadz((prev) => [...prev, ...data.data])
+        setCurrentPage(nextPage)
+
+        // Verificar si hay más páginas
+        setHasMorePages(data.meta?.current_page < data.meta?.last_page)
+      } else {
+        // No hay más datos para cargar
+        setHasMorePages(false)
+      }
+    } catch (error) {
+      console.error("Error al cargar más sets:", error)
+      setPaginationError("No se pudieron cargar más sets. Inténtalo de nuevo.")
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
+  if (isLoading && allBrickheadz.length === 0) {
     return (
       <div className="content">
         <div className="loading">
@@ -47,7 +94,7 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
     )
   }
 
-  if (error) {
+  if (error && allBrickheadz.length === 0) {
     return (
       <div className="content">
         <div className="empty-state">
@@ -77,41 +124,62 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
           <p>No se encontraron sets con los criterios seleccionados.</p>
         </div>
       ) : (
-        <div className="grid">
-          {filteredSets.map((set) => (
-            <div key={set.id} className="brickheadz-card" onClick={() => handleSetClick(set)}>
-              <div className="image-container">
-                {set.is_new && <div className="card-badge">NUEVO</div>}
-                <img
-                  src={set.image || "/placeholder.svg?height=220&width=220"}
-                  alt={set.name}
-                  className="brickheadz-image"
-                />
-              </div>
-              <div className="brickheadz-info">
-                <h3>{set.name}</h3>
-                <p>
-                  <strong>ID LEGO:</strong> {set.lego_id}
-                </p>
-                <p>
-                  <strong>Fecha:</strong> {set.release_date || "Desconocida"}
-                </p>
-                <p>
-                  <strong>Estado:</strong>
-                  <span className={set.is_discontinued ? "discontinued" : "available"}>
-                    {set.is_discontinued ? " Descatalogado" : " Disponible"}
-                  </span>
-                </p>
+        <>
+          <div className="grid">
+            {filteredSets.map((set) => (
+              <div key={set.id} className="brickheadz-card" onClick={() => handleSetClick(set)}>
+                <div className="image-container">
+                  {set.is_new && <div className="card-badge">NUEVO</div>}
+                  <img
+                    src={set.image || "/placeholder.svg?height=220&width=220"}
+                    alt={set.name}
+                    className="brickheadz-image"
+                  />
+                </div>
+                <div className="brickheadz-info">
+                  <h3>{set.name}</h3>
+                  <p>
+                    <strong>ID LEGO:</strong> {set.lego_id}
+                  </p>
+                  <p>
+                    <strong>Fecha:</strong> {set.release_date || "Desconocida"}
+                  </p>
+                  <p>
+                    <strong>Estado:</strong>
+                    <span className={set.is_discontinued ? "discontinued" : "available"}>
+                      {set.is_discontinued ? " Descatalogado" : " Disponible"}
+                    </span>
+                  </p>
 
-                {isAuthenticated && (
-                  <button className="add-to-collection" onClick={(e) => handleAddToCollection(e, set)}>
-                    Añadir a mi colección
-                  </button>
-                )}
+                  {isAuthenticated && (
+                    <button className="add-to-collection" onClick={(e) => handleAddToCollection(e, set)}>
+                      Añadir a mi colección
+                    </button>
+                  )}
+                </div>
               </div>
+            ))}
+          </div>
+
+          {/* Sección de paginación */}
+          {hasMorePages && (
+            <div className="pagination-container">
+              {paginationError && <div className="pagination-error">{paginationError}</div>}
+              <button className="load-more-button" onClick={loadMoreBrickheadz} disabled={isLoadingMore}>
+                {isLoadingMore ? (
+                  <>
+                    <div className="loading-spinner-small"></div>
+                    Cargando...
+                  </>
+                ) : (
+                  <>
+                    Cargar más <FaChevronDown />
+                  </>
+                )}
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {/* Modal de detalles del set */}

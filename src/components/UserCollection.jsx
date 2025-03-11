@@ -3,30 +3,74 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import "./UserCollection.css"
-import { FaExclamationTriangle, FaTrash, FaSync } from "react-icons/fa"
+import { FaExclamationTriangle, FaTrash, FaSync, FaChevronDown } from "react-icons/fa"
 
 const UserCollection = ({ refreshData }) => {
   const [collection, setCollection] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMorePages, setHasMorePages] = useState(true)
+  const [paginationError, setPaginationError] = useState(null)
+
   useEffect(() => {
-    fetchUserCollection()
+    fetchUserCollection(1, true) // Cargar la primera página al montar
   }, [])
 
-  const fetchUserCollection = async () => {
-    setIsLoading(true)
+  const fetchUserCollection = async (page = 1, resetCollection = false) => {
+    if (page === 1) {
+      setIsLoading(true)
+    } else {
+      setIsLoadingMore(true)
+    }
+
     setError(null)
+    setPaginationError(null)
 
     try {
-      const response = await axios.get("https://api.lego.lagrailla.es/api/user/collection")
-      setCollection(response.data.data || [])
+      const response = await axios.get(`https://api.lego.lagrailla.es/api/user/collection?page=${page}`)
+
+      const newItems = response.data.data || []
+
+      if (resetCollection) {
+        setCollection(newItems)
+      } else {
+        setCollection((prev) => [...prev, ...newItems])
+      }
+
+      // Verificar si hay más páginas
+      if (response.data.meta) {
+        setHasMorePages(response.data.meta.current_page < response.data.meta.last_page)
+      } else {
+        setHasMorePages(newItems.length > 0)
+      }
+
+      setCurrentPage(page)
     } catch (error) {
       console.error("Error al obtener la colección:", error)
-      setError("No se pudo cargar tu colección. Por favor, inténtalo de nuevo más tarde.")
+      if (page === 1) {
+        setError("No se pudo cargar tu colección. Por favor, inténtalo de nuevo más tarde.")
+      } else {
+        setPaginationError("Error al cargar más elementos. Inténtalo de nuevo.")
+      }
     } finally {
-      setIsLoading(false)
+      if (page === 1) {
+        setIsLoading(false)
+      } else {
+        setIsLoadingMore(false)
+      }
     }
+  }
+
+  const loadMoreItems = () => {
+    fetchUserCollection(currentPage + 1, false)
+  }
+
+  const refreshCollection = () => {
+    fetchUserCollection(1, true)
   }
 
   const removeFromCollection = async (setId) => {
@@ -52,7 +96,7 @@ const UserCollection = ({ refreshData }) => {
         <FaExclamationTriangle />
         <h3>Error</h3>
         <p>{error}</p>
-        <button onClick={fetchUserCollection}>Intentar de nuevo</button>
+        <button onClick={refreshCollection}>Intentar de nuevo</button>
       </div>
     )
   }
@@ -70,7 +114,7 @@ const UserCollection = ({ refreshData }) => {
     <div className="user-collection">
       <div className="collection-header">
         <h2 className="collection-title">Mi Colección de BrickHeadz</h2>
-        <button className="refresh-button" onClick={fetchUserCollection} title="Actualizar colección">
+        <button className="refresh-button" onClick={refreshCollection} title="Actualizar colección">
           <FaSync />
         </button>
       </div>
@@ -107,6 +151,25 @@ const UserCollection = ({ refreshData }) => {
           </div>
         ))}
       </div>
+
+      {/* Sección de paginación */}
+      {hasMorePages && (
+        <div className="pagination-container">
+          {paginationError && <div className="pagination-error">{paginationError}</div>}
+          <button className="load-more-button" onClick={loadMoreItems} disabled={isLoadingMore}>
+            {isLoadingMore ? (
+              <>
+                <div className="loading-spinner-small"></div>
+                Cargando...
+              </>
+            ) : (
+              <>
+                Cargar más <FaChevronDown />
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
