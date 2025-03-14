@@ -3,15 +3,15 @@
 import { useState } from "react"
 import "./Header.css"
 import logo from "./assets/lego-logo.svg"
-import { FaSearch, FaSignOutAlt, FaList } from "react-icons/fa"
+import { FaSearch, FaSignOutAlt, FaList, FaChartBar, FaHome } from "react-icons/fa"
 import { useAuth } from "./context/AuthContext"
 import Modal from "./Modal"
 import LoginForm from "./components/LoginForm"
 
-function Header({ onToggleCollection, showCollection }) {
+function Header({ isAuthenticated, activeView, onViewChange }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const { isAuthenticated, logout } = useAuth()
+  const { logout } = useAuth()
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -46,13 +46,32 @@ function Header({ onToggleCollection, showCollection }) {
           {isAuthenticated ? (
             <div className="user-menu">
               <button
-                className={`collection-toggle-btn ${showCollection ? "active" : ""}`}
-                onClick={onToggleCollection}
-                title={showCollection ? "Ver catálogo" : "Ver mi colección"}
+                className={`nav-button ${activeView === "catalog" ? "active" : ""}`}
+                onClick={() => onViewChange("catalog")}
+                title="Ver catálogo"
+              >
+                <FaHome />
+                <span>Catálogo</span>
+              </button>
+
+              <button
+                className={`nav-button ${activeView === "collection" ? "active" : ""}`}
+                onClick={() => onViewChange("collection")}
+                title="Ver mi colección"
               >
                 <FaList />
-                <span>{showCollection ? "Catálogo" : "Mi Colección"}</span>
+                <span>Mi Colección</span>
               </button>
+
+              <button
+                className={`nav-button ${activeView === "dashboard" ? "active" : ""}`}
+                onClick={() => onViewChange("dashboard")}
+                title="Ver dashboard"
+              >
+                <FaChartBar />
+                <span>Dashboard</span>
+              </button>
+
               <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">
                 <FaSignOutAlt />
               </button>

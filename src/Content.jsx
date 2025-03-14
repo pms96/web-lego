@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState } from "react"
+import { useState, useEffect } from "react"
 import "./Content.css"
 import Modal from "./Modal"
 import { FaInfoCircle, FaExclamationTriangle, FaChevronDown } from "react-icons/fa"
 import AddToCollectionForm from "./components/AddToCollectionForm"
+import axios from "axios"
 
 function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickheadz, userId }) {
   const [filter, setFilter] = useState("all")
@@ -20,20 +21,54 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
   const [hasMorePages, setHasMorePages] = useState(true)
   const [paginationError, setPaginationError] = useState(null)
 
-  // Filtrar los sets según el criterio seleccionado
-  const filteredSets = allBrickheadz.filter((set) => {
-    if (filter === "all") return true
-    if (filter === "available") return !set.is_discontinued
-    if (filter === "discontinued") return set.is_discontinued
-    return true
-  })
+  // Estado para la colección del usuario (para filtrar los no coleccionados)
+  const [userCollection, setUserCollection] = useState([])
+  const [isLoadingCollection, setIsLoadingCollection] = useState(false)
+
+  // Cargar la colección del usuario si está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserCollection()
+    }
+  }, [isAuthenticated])
 
   // Actualizar allBrickheadz cuando cambia brickheadz (primera carga)
-  React.useEffect(() => {
+  useEffect(() => {
     if (brickheadz.length > 0 && allBrickheadz.length === 0) {
       setAllBrickheadz(brickheadz)
     }
   }, [brickheadz, allBrickheadz.length])
+
+  // Función para obtener la colección del usuario
+  const fetchUserCollection = async () => {
+    setIsLoadingCollection(true)
+    try {
+      const response = await axios.get("https://api.lego.lagrailla.es/api/user/collection")
+      if (response.data && response.data.data) {
+        setUserCollection(response.data.data)
+      }
+    } catch (error) {
+      console.error("Error al obtener la colección del usuario:", error)
+    } finally {
+      setIsLoadingCollection(false)
+    }
+  }
+
+  // Filtrar los sets según el criterio seleccionado
+  const filteredSets = allBrickheadz.filter((set) => {
+    // Filtro básico
+    if (filter === "all") return true
+    if (filter === "available") return !set.is_discontinued
+    if (filter === "discontinued") return set.is_discontinued
+
+    // Filtro para sets no coleccionados
+    if (filter === "not_collected") {
+      // Verificar si el set no está en la colección del usuario
+      return !userCollection.some((item) => item.brickheadz_id === set.id)
+    }
+
+    return true
+  })
 
   const handleSetClick = (set) => {
     setSelectedSet(set)
@@ -49,6 +84,8 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
   const handleAddToCollectionSuccess = () => {
     // Refrescar los datos después de añadir a la colección
     fetchBrickheadz()
+    // También actualizar la colección del usuario para el filtro
+    fetchUserCollection()
   }
 
   const loadMoreBrickheadz = async () => {
@@ -114,6 +151,7 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
           <option value="all">Todos los sets</option>
           <option value="available">Disponibles</option>
           <option value="discontinued">Descatalogados</option>
+          {isAuthenticated && <option value="not_collected">No coleccionados</option>}
         </select>
       </div>
 
@@ -137,7 +175,10 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
                   />
                 </div>
                 <div className="brickheadz-info">
-                  <h3>{set.name}</h3>
+                  <div className="brickheadz-title-container">
+                    <h3>{set.name}</h3>
+                    <div className="brickheadz-id">{set.id}</div>
+                  </div>
                   <p>
                     <strong>ID LEGO:</strong> {set.lego_id}
                   </p>
@@ -186,7 +227,10 @@ function Content({ brickheadz, isAuthenticated, isLoading, error, fetchBrickhead
       {isModalOpen && selectedSet && (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <div>
-            <h2 className="modal-title">{selectedSet.name}</h2>
+            <h2 className="modal-title">
+              {selectedSet.name}
+              <div className="modal-brickheadz-id">{selectedSet.id}</div>
+            </h2>
             <div className="modal-body">
               <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
                 <img

@@ -6,6 +6,7 @@ import Header from "./Header.jsx"
 import Content from "./Content.jsx"
 import Input from "./Input.jsx"
 import UserCollection from "./components/UserCollection.jsx"
+import Dashboard from "./components/Dashboard.jsx"
 import { AuthProvider, useAuth } from "./context/AuthContext"
 import axios from "axios"
 
@@ -23,7 +24,7 @@ function AppContent() {
   const [brickheadz, setBrickheadz] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [showCollection, setShowCollection] = useState(false)
+  const [activeView, setActiveView] = useState("catalog") // "catalog", "collection", "dashboard"
   const { isAuthenticated, loading, user } = useAuth()
 
   // Función para obtener los sets BrickHeadz desde la API
@@ -52,7 +53,12 @@ function AppContent() {
 
   useEffect(() => {
     fetchBrickheadz()
-  }, [fetchBrickheadz]) // Added fetchBrickheadz to dependencies
+  }, [fetchBrickheadz])
+
+  // Manejar cambio de vista
+  const handleViewChange = (view) => {
+    setActiveView(view)
+  }
 
   // Esperar a que se verifique la autenticación
   if (loading) {
@@ -68,13 +74,11 @@ function AppContent() {
 
   return (
     <div className="app-container">
-      <Header
-        isAuthenticated={isAuthenticated}
-        onToggleCollection={() => setShowCollection(!showCollection)}
-        showCollection={showCollection}
-      />
+      <Header isAuthenticated={isAuthenticated} activeView={activeView} onViewChange={handleViewChange} />
       <div className="main-content">
-        {isAuthenticated && showCollection ? (
+        {isAuthenticated && activeView === "dashboard" ? (
+          <Dashboard />
+        ) : isAuthenticated && activeView === "collection" ? (
           <UserCollection refreshData={fetchBrickheadz} />
         ) : (
           <>

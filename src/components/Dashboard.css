@@ -1,0 +1,296 @@
+.dashboard {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dashboard-title {
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    position: relative;
+    margin: 0;
+  }
+  
+  .dashboard-title::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 3rem;
+    height: 0.25rem;
+    background-color: var(--primary);
+    border-radius: 1rem;
+  }
+  
+  .refresh-button {
+    background: transparent;
+    border: 1px solid #ddd;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .refresh-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--primary);
+    transform: rotate(180deg);
+  }
+  
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .stat-icon {
+    background-color: rgba(228, 0, 43, 0.1);
+    color: var(--primary);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  
+  .stat-content {
+    flex: 1;
+  }
+  
+  .stat-content h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    transition: var(--transition);
+    height: 100%;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+    position: relative;
+  }
+  
+  .card-title::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 2rem;
+    height: 0.15rem;
+    background-color: var(--primary);
+    border-radius: 1rem;
+  }
+  
+  .chart-container {
+    height: 300px;
+    width: 100%;
+  }
+  
+  .highlight-set {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .highlight-set-image {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+  
+  .highlight-set-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .highlight-set-info {
+    flex: 1;
+  }
+  
+  .highlight-set-info h4 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+  }
+  
+  .highlight-set-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  
+  .no-data {
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+  }
+  
+  .dashboard-loading,
+  .dashboard-error,
+  .dashboard-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+  
+  .dashboard-loading p {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+  }
+  
+  .dashboard-error {
+    color: #e74c3c;
+  }
+  
+  .dashboard-error svg {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .dashboard-error button {
+    margin-top: 1rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .dashboard-error button:hover {
+    background-color: var(--primary-hover);
+  }
+  
+  .dashboard-empty h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  
+  .dashboard-empty p {
+    color: var(--text-secondary);
+  }
+  
+  .simple-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .chart-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .chart-item-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+  }
+  
+  .chart-item-name {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  
+  .chart-item-value {
+    color: var(--text-secondary);
+  }
+  
+  .chart-item-bar-container {
+    width: 100%;
+    height: 0.75rem;
+    background-color: #f0f0f0;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  
+  .chart-item-bar {
+    height: 100%;
+    border-radius: 1rem;
+    transition: width 0.5s ease;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .stats-overview {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  

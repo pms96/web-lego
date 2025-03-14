@@ -163,7 +163,10 @@ const UserCollection = ({ refreshData }) => {
               />
             </div>
             <div className="collection-item-info">
-              <h3>{item.brickheadz?.name}</h3>
+              <div className="brickheadz-title-container">
+                <h3>{item.brickheadz?.name}</h3>
+                {item.brickheadz?.id && <div className="brickheadz-id">{item.brickheadz.id}</div>}
+              </div>
               <p>
                 <strong>ID:</strong> {item.brickheadz?.lego_id}
               </p>
